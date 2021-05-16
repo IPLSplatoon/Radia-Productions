@@ -1,0 +1,5 @@
+twitchio
+motor
+sentry-sdk
+aiohttp
+dnspython
