@@ -34,7 +34,7 @@ class Commentators(commands.Cog):
                 twitter = twitter.replace("https://twitter.com/home", "")
             response = await self.database.set_comms_info(str(ctx.message.author.id), name, twitter, pronouns)
             if response:
-                embed = utils.Embed(title=f"Set Commentator Profile", description="We set you profile")
+                embed = utils.Embed(title=f"Set Commentator Profile", description="We've set your profile")
                 embed.add_field(name="Name", value=f"{name}", inline=False)
                 embed.add_field(name="Twitter", value=f"@{twitter}", inline=False)
                 embed.add_field(name="Pronouns", value=f"{pronouns}", inline=False)
@@ -81,7 +81,7 @@ class Commentators(commands.Cog):
                                                  description="You don't have a commentator profile"))
                 return
 
-    @commentators.command(aliases=["setShow", "setshow"])
+    @commentators.command(aliases=["setNoShow", "setnoshow"])
     async def set_no_show(self, ctx, no_show: str):
         """
         Set the no show, to avoid showing on commentators details
@@ -107,7 +107,7 @@ class Commentators(commands.Cog):
             except Exception as err:
                 await ctx.send(embed=utils.Embed(title="Error", description=f"```\n{err}\n```"))
 
-    @commentators.command(aliases=["setAlert", "setalert"])
+    @commentators.command(aliases=["setNoAlert", "setnoalert"])
     async def set_no_alert(self, ctx, no_alert: str):
         """
         Set the no alert, to avoid showing system alerts
@@ -116,7 +116,7 @@ class Commentators(commands.Cog):
             response = await self.database.set_comms_no_alert(str(ctx.message.author.id), True)
             try:
                 if response:
-                    embed = utils.Embed(title="Commentator No Show", description=f"Set your no show state")
+                    embed = utils.Embed(title="Commentator No Alert", description=f"Set your no alert state")
                     embed.add_field(name="No Show", value=f"True")
                     await ctx.send(embed=embed)
                     return
@@ -126,7 +126,7 @@ class Commentators(commands.Cog):
             response = await self.database.set_comms_no_alert(str(ctx.message.author.id), False)
             try:
                 if response:
-                    embed = utils.Embed(title="Commentator No Show", description=f"Set your no show state")
+                    embed = utils.Embed(title="Commentator No Alert", description=f"Set your no alert state")
                     embed.add_field(name="No Show", value=f"False")
                     await ctx.send(embed=embed)
                     return
