@@ -30,7 +30,7 @@ def initialize_sentry(sentry_env):
     import sentry_sdk
 
     sentry_sdk.init(
-        dsn="https://81de215773ca4cd59fc649f1cf3168a4@o83253.ingest.sentry.io/5765993",
+        dsn="https://e62712051c0141f3a8442b4eea1166a9@o83253.ingest.sentry.io/5768573",
         environment=sentry_env
     )
 

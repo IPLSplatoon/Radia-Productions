@@ -29,6 +29,14 @@ system.
 Each application in the stack requires its own .env file located in the **Root**
 directory, they are as follows.
 
+It's recommended that you have separate username and password URI for MongoDB
+
+### **Sentry Disclosure**
+
+If you enable `SENTRY` in the `.env` file, if your instance has an error, IPL's
+Production team will receive a copy of the error via Sentry for
+debugging purposes.
+
 ### `discord.env` for Discord bot
 ```
 DISCORDTOKEN=Discord.bot.token
@@ -55,12 +63,25 @@ SENTRY = "System Environment"  # Optional
 DEBUG = 1  # Optional
 ```
 
-After setting up these `.env` files up, you can run `docker-compose up` to start
-the stack
+### `docker-compose.yml` edits
+For [traefik](https://traefik.io/traefik/) to setup Lets' Encrypt SSL
+certificate correctly you need to edit the docker compose file.
+
+1. Replace `api.website.com` in `traefik.http.routers.whoami.rule=Host`
+attached to the `rest-api`'s labels with the link you want to use to your REST API.
+
+2. Replace `security@website.com` in `--certificatesresolvers.myresolver.acme.email=`
+attached to `traefik` commands with the email you want to give to let's encrypt,
+for security notifications'.
+
+After setting up these `.env` files up and edited the `docker-compose.yml` file,
+you can run `docker-compose up` to start the stack
+
+When started, the REST API Docs will be available at `https://your-website.com/docs`
 
 ## Credits
 
 Written by [Vincent Lee](https://github.com/vlee489) & [LeptoFlare](https://github.com/LeptoFlare)
 
 This bot was inspried by the [EGtv-Bot](https://github.com/NintenZone/EGtv-Bot)
-by Devon S.(*NintenZone*)
+by NintenZone

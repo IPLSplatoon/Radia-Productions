@@ -5,7 +5,7 @@ from typing import Optional
 
 
 class GuildInfo:
-    bracket_link: Optional[dict]
+    bracket_link: Optional[str]
 
     def __init__(self, query_data: dict):
         """
