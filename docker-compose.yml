@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+
+    twitch-bot:
+        build: "twitchBot/"
+        env_file: twitch.env
+        restart: unless-stopped
+
+    discord-bot:
+        build: "discordBot/"
+        env_file: discord.env
+        restart: unless-stopped
