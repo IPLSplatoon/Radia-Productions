@@ -8,6 +8,8 @@ import re
 from bot.mongo import MongoConnector
 from bot import utils
 
+discord_mention = re.compile(r"<@!(\d+)>")
+
 
 class Commentators(commands.Cog):
     def __init__(self, bot):
@@ -32,6 +34,12 @@ class Commentators(commands.Cog):
                 twitter = twitter[1:]
             elif "https://twitter.com/" in twitter:  # if they gave the full link, remove the link portion
                 twitter = twitter.replace("https://twitter.com/home", "")
+            elif discord_mention.split(twitter):
+                await ctx.send(embed=utils.Embed(title="Set Commentator Twitter Handle Error!",
+                                                 description=f"You Twitter handle contains a Discord mention!\n"
+                                                             f"Try the command again without the `@` in your "
+                                                             f"Twitter handle"))
+                return
             response = await self.database.set_comms_info(str(ctx.message.author.id), name, twitter, pronouns)
             if response:
                 embed = utils.Embed(title=f"Set Commentator Profile", description="We've set your profile")
