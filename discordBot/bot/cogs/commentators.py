@@ -34,7 +34,7 @@ class Commentators(commands.Cog):
                 twitter = twitter[1:]
             elif "https://twitter.com/" in twitter:  # if they gave the full link, remove the link portion
                 twitter = twitter.replace("https://twitter.com/home", "")
-            elif discord_mention.split(twitter):
+            elif re.search(discord_mention, twitter):
                 await ctx.send(embed=utils.Embed(title="Set Commentator Twitter Handle Error!",
                                                  description=f"You Twitter handle contains a Discord mention!\n"
                                                              f"Try the command again without the `@` in your "
