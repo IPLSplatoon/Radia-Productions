@@ -41,13 +41,13 @@ class Voice(commands.Cog):
                         alert_channel = self.bot.get_channel(int(guild_info.alert_channel_id))
                         embed = utils.Embed(title="Commentator Error",
                                             description=f"{member.mention} you don't have a commentator profile!\n"
-                                                        f"use `^help commentators set_profile` to get started")
+                                                        f"use `!help commentators set_profile` to get started")
                         await alert_channel.send(embed=embed)
             elif before.channel and (str(before.channel.id) == guild_info.vc_channel_id):  # Member leave channel
                 # Remove them from the guild current live comms list
                 await self.database.remove_server_comm(str(member.guild.id), str(member.id))
 
-    @voice.command(aliases=["refreshComms", "refreshcomms"])
+    @voice.command(aliases=["refreshComms", "refreshcomms", "refresh"])
     async def refresh_commentators(self, ctx):
         """
         Force refresh the commentator in a the live voice channel
