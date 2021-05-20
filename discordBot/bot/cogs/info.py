@@ -17,15 +17,7 @@ class Info(commands.Cog):
         assert isinstance(self.bot.mongo, MongoConnector)
         return self.bot.mongo
 
-    @commands.group()
-    async def info(self, ctx):
-        """Group of commands handling the guild/server info & setting."""
-
-    @info.command(aliases=["display"])
-    async def display_info(self, ctx):
-        """
-        The current Commentator shown by bot
-        """
+    async def info_compiler(self, ctx):
         guild_info = await self.database.get_guild_info(str(ctx.message.guild.id))
         if guild_info:
             embed = utils.Embed(title="Current Information")
@@ -33,7 +25,7 @@ class Info(commands.Cog):
             embed.add_field(name="Bracket Link(s)", value=f"{guild_info.bracket_link}", inline=False)
             for n in range(len(guild_info.current_comms)):
                 x = guild_info.current_comms[n]
-                embed.add_field(name=f"Comm {n+1}",
+                embed.add_field(name=f"Comm {n + 1}",
                                 value=f"```\nName: {x['name']}\n"
                                       f"Twitter: {x['twitter']}\n"
                                       f"Pronouns: {x['pronouns']}\n```",
@@ -42,7 +34,19 @@ class Info(commands.Cog):
         else:
             await ctx.send(embed=utils.Embed(title="Display Info Error", description=f"Guild has no data stored"))
 
-    @info.command(aliases=["setTournamentName", "tournamentname"])
+    @commands.group(invoke_without_command=True)
+    async def info(self, ctx):
+        """Group of commands handling the guild/server info & setting."""
+        await self.info_compiler(ctx)
+
+    @info.command(aliases=["display"])
+    async def display_info(self, ctx):
+        """
+        The current Commentator shown by bot
+        """
+        await self.info_compiler(ctx)
+
+    @info.command(aliases=["setTournamentName", "tournamentname", "tournament"])
     async def set_tournament_name(self, ctx, *, arg):
         """
         Set tournament name
@@ -50,7 +54,7 @@ class Info(commands.Cog):
         if await self.database.set_server_tournament_name(str(ctx.message.guild.id), arg):
             await ctx.message.add_reaction("👍")
 
-    @info.command(aliases=["setBracketLink", "bracketlink"])
+    @info.command(aliases=["setBracketLink", "bracketlink", "bracket"])
     async def set_bracket_link(self, ctx, *, arg):
         """
         Set bracket link
