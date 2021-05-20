@@ -20,7 +20,7 @@ class Commentators(commands.Cog):
         assert isinstance(self.bot.mongo, MongoConnector)
         return self.bot.mongo
 
-    @commands.group()
+    @commands.group(aliases=["commentator", "comms"])
     async def commentators(self, ctx):
         """Group of commands handling the commentators info."""
 
@@ -58,36 +58,26 @@ class Commentators(commands.Cog):
         if profile:
             if re.match(r"<@!(\d+)>", profile):
                 query = await self.database.get_comms_info(profile[3:-1])
-                if query:
-                    embed = utils.Embed(title="Commentator Profile", description=f"Commentator profile for {profile}")
-                    embed.add_field(name="Name", value=f"{query.name}", inline=False)
-                    embed.add_field(name="Twitter", value=f"@{query.twitter}", inline=False)
-                    embed.add_field(name="Pronouns", value=f"{query.pronouns}", inline=False)
-                    embed.add_field(name="No Show", value=f"{query.no_show}")
-                    embed.add_field(name="No Alert", value=f"{query.no_alert}")
-                    await ctx.send(embed=embed)
-                    return
-                else:
-                    await ctx.send(embed=utils.Embed(title="No Profile", description="User has no commentator profile"))
-                    return
+                description = f"Commentator profile for {profile}"
             else:
-                await ctx.send(embed=utils.Embed(title="Invalid Mention", description="Unable to get profile!"))
-                return
+                query = await self.database.get_comms_info(profile)
+                description = f"Commentator profile for <@!{profile}>"
         else:
             query = await self.database.get_comms_info(str(ctx.message.author.id))
-            if query:
-                embed = utils.Embed(title="Commentator Profile", description=f"Your commentator profile")
-                embed.add_field(name="Name", value=f"{query.name}", inline=False)
-                embed.add_field(name="Twitter", value=f"@{query.twitter}", inline=False)
-                embed.add_field(name="Pronouns", value=f"{query.pronouns}", inline=False)
-                embed.add_field(name="No Show", value=f"{query.no_show}")
-                embed.add_field(name="No Alert", value=f"{query.no_alert}")
-                await ctx.send(embed=embed)
-                return
-            else:
-                await ctx.send(embed=utils.Embed(title="No Profile",
-                                                 description="You don't have a commentator profile"))
-                return
+            description = f"Your Commentator profile"
+        if query:
+            embed = utils.Embed(title="Commentator Profile", description=f"{description}")
+            embed.add_field(name="Name", value=f"{query.name}", inline=False)
+            embed.add_field(name="Twitter", value=f"@{query.twitter}", inline=False)
+            embed.add_field(name="Pronouns", value=f"{query.pronouns}", inline=False)
+            embed.add_field(name="No Show", value=f"{query.no_show}")
+            embed.add_field(name="No Alert", value=f"{query.no_alert}")
+            await ctx.send(embed=embed)
+            return
+        else:
+            await ctx.send(embed=utils.Embed(title="No Profile Found",
+                                             description="Query has no commentator profile"))
+            return
 
     @commentators.command(aliases=["setNoShow", "setnoshow"])
     async def set_no_show(self, ctx, no_show: str):
