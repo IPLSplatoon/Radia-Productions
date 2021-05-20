@@ -25,25 +25,28 @@ class Voice(commands.Cog):
     async def on_voice_state_update(self, member, before, after):
         guild_info = await self.database.get_guild_info(str(member.guild.id))
         if guild_info:  # If guild exists
-            if after.channel:  # User join channel
-                if str(after.channel.id) == guild_info.vc_channel_id:  # if the join the vc channel
-                    member_comms_info = await self.database.get_comms_info(str(member.id))
-                    if member_comms_info and (not member_comms_info.no_show):
-                        await self.database.upsert_server_comm(str(member.guild.id), member_comms_info)
-                    elif member_comms_info and member_comms_info.no_show and (not member_comms_info.no_alert):
-                        # Alert member they are not being shown
-                        alert_channel = self.bot.get_channel(int(guild_info.alert_channel_id))
-                        embed = utils.Embed(title="Commentator Warning",
-                                            description=f"{member.mention} you're not shown as a commentator")
-                        await alert_channel.send(embed=embed)
-                    elif not member_comms_info:
-                        # Alert member they don't have a profile setup
-                        alert_channel = self.bot.get_channel(int(guild_info.alert_channel_id))
-                        embed = utils.Embed(title="Commentator Error",
-                                            description=f"{member.mention} you don't have a commentator profile!\n"
-                                                        f"use `!help commentators set_profile` to get started")
-                        await alert_channel.send(embed=embed)
-            elif before.channel and (str(before.channel.id) == guild_info.vc_channel_id):  # Member leave channel
+            # If user joins the vc used for live comms data
+            if after.channel and ((not before.channel) or (before.channel.id != after.channel.id)) and \
+                    (str(after.channel.id) == guild_info.vc_channel_id):
+                member_comms_info = await self.database.get_comms_info(str(member.id))
+                if member_comms_info and (not member_comms_info.no_show):
+                    await self.database.upsert_server_comm(str(member.guild.id), member_comms_info)
+                elif member_comms_info and member_comms_info.no_show and (not member_comms_info.no_alert):
+                    # Alert member they are not being shown
+                    alert_channel = self.bot.get_channel(int(guild_info.alert_channel_id))
+                    embed = utils.Embed(title="Commentator Warning",
+                                        description=f"{member.mention} you're not shown as a commentator")
+                    await alert_channel.send(embed=embed)
+                elif not member_comms_info:
+                    # Alert member they don't have a profile setup
+                    alert_channel = self.bot.get_channel(int(guild_info.alert_channel_id))
+                    embed = utils.Embed(title="Commentator Error",
+                                        description=f"{member.mention} you don't have a commentator profile!\n"
+                                                    f"use `!help commentators set_profile` to get started")
+                    await alert_channel.send(embed=embed)
+            # Member leave voice channel used for live comms data
+            elif before.channel and ((after.channel is None) or (after.channel.id != before.channel.id)) and \
+                    (str(before.channel.id) == guild_info.vc_channel_id):
                 # Remove them from the guild current live comms list
                 await self.database.remove_server_comm(str(member.guild.id), str(member.id))
 
