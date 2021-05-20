@@ -14,8 +14,8 @@ class Info(commands.Cog):
 
     @property
     def database(self):
-        assert isinstance(self.bot.mongo, DBConnector)
-        return self.bot.mongo
+        assert isinstance(self.bot.db, DBConnector)
+        return self.bot.db
 
     async def info_compiler(self, ctx):
         guild_info = await self.database.get_guild_info(str(ctx.message.guild.id))

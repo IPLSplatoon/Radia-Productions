@@ -14,8 +14,8 @@ class Voice(commands.Cog):
 
     @property
     def database(self):
-        assert isinstance(self.bot.mongo, DBConnector)
-        return self.bot.mongo
+        assert isinstance(self.bot.db, DBConnector)
+        return self.bot.db
 
     @commands.group()
     async def voice(self, ctx):

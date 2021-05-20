@@ -1,20 +1,29 @@
 version: "3.8"
 services:
+    redis:
+        image: "redis:alpine"
+        restart: unless-stopped
 
     twitch-bot:
         build: "twitchBot/"
         env_file: twitch.env
         restart: unless-stopped
+        depends_on:
+            - redis
 
     discord-bot:
         build: "discordBot/"
         env_file: discord.env
         restart: unless-stopped
+        depends_on:
+            - redis
 
     rest-api:
         build: "RestAPI/"
         env_file: restapi.env
         restart: unless-stopped
+        depends_on:
+            - traefik
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.whoami.rule=Host(`api.website.com`)"

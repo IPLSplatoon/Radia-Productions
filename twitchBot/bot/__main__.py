@@ -30,6 +30,14 @@ if not (twitch_channels_string := os.getenv("TWITCHCHANNELS")):
     logging.error("static.env - 'TWITCHCHANNELS' key not found. Cannot start bot.")
     raise EnvironmentError
 
+if not (debug := os.getenv("DEBUG")):
+    redis_url = "redis://redis:6379"
+elif debug == "1":
+    if not (redis_url := os.getenv("REDISURL")):
+        redis_url = "redis://redis:6379"
+else:
+    redis_url = "redis://redis:6379"
+
 # Forms list of channels
 channels = []
 for c in twitch_channels_string.split(','):
@@ -37,7 +45,7 @@ for c in twitch_channels_string.split(','):
 
 # Create Bot
 bot = Bot(irc_token=twitch_oauth, client_id=twitch_client_id, nick=twitch_nick, initial_channels=channels,
-          mongo_uri=mongo_uri, command_prefix="!" if not os.getenv("DEBUG") else "^")
+          mongo_uri=mongo_uri, redis_url=redis_url, command_prefix="!" if not os.getenv("DEBUG") else "^")
 
 for cog in cogs.names:
     bot.load_module("bot.cogs." + cog)

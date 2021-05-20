@@ -17,8 +17,8 @@ class Commentators(commands.Cog):
 
     @property
     def database(self):
-        assert isinstance(self.bot.mongo, DBConnector)
-        return self.bot.mongo
+        assert isinstance(self.bot.db, DBConnector)
+        return self.bot.db
 
     @commands.group(aliases=["commentator", "comms"])
     async def commentators(self, ctx):
