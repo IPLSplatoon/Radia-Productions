@@ -17,19 +17,19 @@ class DBConnector:
         self.__db = self.__client[mongo_db_name]
         self.__redis_client = StrictRedis.from_url(redis_url)
 
-    async def __fetch_set_redis(self, query: dict, key: str, expire: Union[int, None] = 1800):
+    async def __fetch_set_redis(self, query: dict, key: str, expire: Union[int, None] = 1800) -> Optional[GuildInfo]:
         db_query = await self.__db.server.find_one(query)
         if db_query:
             data = GuildInfo(db_query).dict
             if isinstance(expire, int):  # If we've given a key expiry time
                 if await self.__redis_client.set(key, msgpack.packb(data, use_bin_type=True), ex=expire):
-                    return db_query
+                    return GuildInfo(db_query)
             else:
                 if await self.__redis_client.set(key, msgpack.packb(data, use_bin_type=True)):
-                    return db_query
+                    return GuildInfo(db_query)
         return None
 
-    async def __update_redis_twitch(self, query: dict, expire: Union[int, None] = 1800):
+    async def __update_redis_twitch(self, query: dict, expire: Union[int, None] = 1800) -> Optional[GuildInfo]:
         db_query = await self.__db.server.find_one(query)
         if db_query:
             if "twitchChannelName" in db_query:
@@ -37,17 +37,17 @@ class DBConnector:
                 if isinstance(expire, int):  # If we've given a key expiry time
                     if await self.__redis_client.set(f"twitch:{db_query['twitchChannelName']}",
                                                      msgpack.packb(data, use_bin_type=True), ex=expire):
-                        return db_query
+                        return GuildInfo(db_query)
                 else:
                     if await self.__redis_client.set(f"twitch:{db_query['twitchChannelName']}",
                                                      msgpack.packb(data, use_bin_type=True)):
-                        return db_query
+                        return GuildInfo(db_query)
         return None
 
-    async def __retrieve_from_redis(self, key: str) -> Optional[dict]:
+    async def __retrieve_from_redis(self, key: str) -> Optional[GuildInfo]:
         query = await self.__redis_client.get(key)
         if query:
-            return msgpack.unpackb(query, raw=False)
+            return GuildInfo(msgpack.unpackb(query, raw=False))
 
     async def get_guild_info(self, guild_id: str) -> Optional[GuildInfo]:
         """
@@ -62,11 +62,11 @@ class DBConnector:
     async def get_twitch_info(self, twitch_name: str) -> Optional[GuildInfo]:
         query = await self.__retrieve_from_redis(f"twitch:{twitch_name}")
         if query:
-            return GuildInfo(query)
+            return query
         else:
             query = await self.__fetch_set_redis({"twitchChannelName": twitch_name}, f"twitch:{twitch_name}")
             if query:
-                return GuildInfo(query)
+                return query
 
     async def set_server_vc(self, guild_id: str, vc_id: str):
         instance = {
@@ -167,3 +167,27 @@ class DBConnector:
             }
         }
         return await self.__db.commenators.update_one({"discordUserID": discord_user_id}, instance, upsert=True)
+
+    # ======== Custom Twitch Commands ========
+
+    async def add_custom_command(self, guild_id: str, command_name: str, command_message: str):
+        instance = {
+            "$set": {
+                "customCommands": {
+                    command_name: command_message
+                }
+            }
+        }
+        response = await self.__db.server.update_one({"discordGuildID": guild_id}, instance, upsert=True)
+        await self.__update_redis_twitch({"discordGuildID": guild_id})
+        return response
+
+    async def remove_custom_command(self, guild_id: str, command_name: str):
+        instance = {
+            "$unset": {
+                f"customCommands.{command_name}": 1
+            }
+        }
+        response = await self.__db.server.update_one({"discordGuildID": guild_id}, instance)
+        await self.__update_redis_twitch({"discordGuildID": guild_id})
+        return response

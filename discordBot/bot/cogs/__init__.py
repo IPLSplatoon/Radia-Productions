@@ -4,5 +4,6 @@ names = [
     "misc",
     "commentators",
     "voice",
-    "info"
+    "info",
+    "custom"
 ]
