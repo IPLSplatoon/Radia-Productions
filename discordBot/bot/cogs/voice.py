@@ -68,7 +68,7 @@ class Voice(commands.Cog):
                 elif not member_comms_info:  # Alert member they don't have a profile setup
                     embed = utils.Embed(title="Commentator Error",
                                         description=f"{member.mention} you don't have a commentator profile!\n"
-                                                    f"use `^help commentators set_profile` to get started")
+                                                    f"use `{ctx.prefix}help commentators set_profile` to get started")
                     await ctx.send(embed=embed)
             await self.database.set_server_comms(str(ctx.message.guild.id), comms_list)
             await ctx.message.add_reaction("👍")
