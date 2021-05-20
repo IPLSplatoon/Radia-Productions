@@ -1,7 +1,13 @@
 """
 Class design for objects
 """
-from typing import Optional
+from typing import Optional, List
+
+
+class CommandInfo:
+    def __init__(self, name: str, message: str):
+        self.name = name
+        self.message = message
 
 
 class GuildInfo:
@@ -19,6 +25,7 @@ class GuildInfo:
         self.current_comms = query_data.get("currentComms")
         self.bracket_link = query_data.get("bracketLink")
         self.tournament_name = query_data.get("tournamentName")
+        self.custom_command = query_data.get("customCommands", {})
 
     @property
     def dict(self) -> dict:
@@ -29,8 +36,20 @@ class GuildInfo:
             "alertChannelID": self.alert_channel_id,
             "currentComms": self.current_comms,
             "bracketLink": self.bracket_link,
-            "tournamentName": self.tournament_name
+            "tournamentName": self.tournament_name,
+            "customCommands": self.custom_command
         }
+
+    def retrieve_custom_command(self, command_name: str) -> Optional[CommandInfo]:
+        command_message = self.custom_command.get(command_name)
+        if command_message:
+            return CommandInfo(command_name, command_message)
+
+    def get_all_commands(self) -> List[CommandInfo]:
+        return_list = []
+        for c in self.custom_command.items():
+            return_list.append(CommandInfo(c[0], c[1]))
+        return return_list
 
 
 class CommInfo:

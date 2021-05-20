@@ -49,6 +49,7 @@ class Commentators(commands.Cog):
                 await ctx.send(embed=embed)
         except Exception as err:
             await ctx.send(embed=utils.Embed(title="Error", description=f"```\n{err}\n```"))
+            pass
 
     @commentators.command()
     async def profile(self, ctx, profile=None):
@@ -104,6 +105,7 @@ class Commentators(commands.Cog):
                     return
             except Exception as err:
                 await ctx.send(embed=utils.Embed(title="Error", description=f"```\n{err}\n```"))
+                pass
 
     @commentators.command(aliases=["setNoAlert", "setnoalert"])
     async def set_no_alert(self, ctx, no_alert: str):
@@ -130,6 +132,7 @@ class Commentators(commands.Cog):
                     return
             except Exception as err:
                 await ctx.send(embed=utils.Embed(title="Error", description=f"```\n{err}\n```"))
+                pass
 
 
 def setup(bot):
