@@ -65,7 +65,7 @@ class MongoConnector:
 
     async def upsert_server_comm(self, guild_id: str, commentators: CommInfo):
         instance = {
-            "$push": {
+            "$addToSet": {
                 "currentComms": {
                     "$each": [commentators.mongo_dict]
                 }
