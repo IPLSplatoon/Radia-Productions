@@ -3,3 +3,5 @@ motor
 sentry-sdk
 aiohttp
 dnspython
+aredis
+msgpack

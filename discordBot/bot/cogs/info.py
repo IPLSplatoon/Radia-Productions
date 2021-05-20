@@ -4,7 +4,7 @@ Handles all commands for information
 import discord
 from discord.ext import commands
 
-from bot.mongo import MongoConnector
+from bot.database import DBConnector
 from bot import utils
 
 
@@ -14,8 +14,8 @@ class Info(commands.Cog):
 
     @property
     def database(self):
-        assert isinstance(self.bot.mongo, MongoConnector)
-        return self.bot.mongo
+        assert isinstance(self.bot.db, DBConnector)
+        return self.bot.db
 
     async def info_compiler(self, ctx):
         guild_info = await self.database.get_guild_info(str(ctx.message.guild.id))

@@ -7,17 +7,17 @@ import discord
 from discord.ext import commands, tasks
 
 from bot import utils
-from .mongo import MongoConnector
+from .database import DBConnector
 
 
 class Bot(commands.Bot):
 
-    mongo: MongoConnector
+    db: DBConnector
 
-    def __init__(self, mongo_uri: str, *args, **kwargs):
+    def __init__(self, mongo_uri: str, redis_url: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.help_command = utils.HelpCommand()
-        self.mongo = MongoConnector(mongo_uri, "radiaTwitch")  # Used for MongoDb
+        self.db = DBConnector(mongo_uri, "radiaTwitch", redis_url)  # Used for MongoDb
 
     async def on_ready(self):
         logging.info("Logged in as: %s", self.user.name)

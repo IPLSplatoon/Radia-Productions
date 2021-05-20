@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 import re
 
-from bot.mongo import MongoConnector
+from bot.database import DBConnector
 from bot import utils
 
 discord_mention = re.compile(r"<@!(\d+)>")
@@ -17,8 +17,8 @@ class Commentators(commands.Cog):
 
     @property
     def database(self):
-        assert isinstance(self.bot.mongo, MongoConnector)
-        return self.bot.mongo
+        assert isinstance(self.bot.db, DBConnector)
+        return self.bot.db
 
     @commands.group(aliases=["commentator", "comms"])
     async def commentators(self, ctx):

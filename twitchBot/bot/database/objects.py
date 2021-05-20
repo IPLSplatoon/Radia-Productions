@@ -5,7 +5,7 @@ from typing import Optional
 
 
 class GuildInfo:
-    bracket_link: Optional[dict]
+    bracket_link: Optional[str]
 
     def __init__(self, query_data: dict):
         """
@@ -19,7 +19,18 @@ class GuildInfo:
         self.current_comms = query_data.get("currentComms")
         self.bracket_link = query_data.get("bracketLink")
         self.tournament_name = query_data.get("tournamentName")
-        self.discord_link = query_data.get("discordLink")
+
+    @property
+    def dict(self) -> dict:
+        return {
+            "discordGuildId": self.guild_id,
+            "twitchChannelName": self.twitch_channel,
+            "discordVCID": self.vc_channel_id,
+            "alertChannelID": self.alert_channel_id,
+            "currentComms": self.current_comms,
+            "bracketLink": self.bracket_link,
+            "tournamentName": self.tournament_name
+        }
 
 
 class CommInfo:

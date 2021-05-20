@@ -20,6 +20,18 @@ class GuildInfo:
         self.bracket_link = query_data.get("bracketLink")
         self.tournament_name = query_data.get("tournamentName")
 
+    @property
+    def dict(self) -> dict:
+        return {
+            "discordGuildId": self.guild_id,
+            "twitchChannelName": self.twitch_channel,
+            "discordVCID": self.vc_channel_id,
+            "alertChannelID": self.alert_channel_id,
+            "currentComms": self.current_comms,
+            "bracketLink": self.bracket_link,
+            "tournamentName": self.tournament_name
+        }
+
 
 class CommInfo:
     def __init__(self, query_data: dict):

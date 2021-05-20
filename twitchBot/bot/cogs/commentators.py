@@ -1,5 +1,5 @@
 from twitchio.ext import commands
-from bot.mongo import MongoConnector
+from bot.database import DBConnector
 
 
 class CommentatorsCog:
@@ -8,8 +8,8 @@ class CommentatorsCog:
 
     @property
     def database(self):
-        assert isinstance(self.bot.mongo, MongoConnector)
-        return self.bot.mongo
+        assert isinstance(self.bot.db, DBConnector)
+        return self.bot.db
 
     @commands.command(aliases=["mic"])
     async def commentators(self, ctx):
