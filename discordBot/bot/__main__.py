@@ -16,6 +16,12 @@ if not (mongo_uri := os.getenv("MONGODBURI")):
     logging.error("static.env - 'MONGODBURI' key not found. Cannot start bot.")
     raise EnvironmentError
 
+if not (debug := os.getenv("DEBUG")):
+    redis_url = "redis://redis:6379"
+elif debug == "1":
+    if not (redis_url := os.getenv("REDISURL")):
+        redis_url = "redis://redis:6379"
+
 # Create Bot
 intents = Intents.default()
 intents.members = True

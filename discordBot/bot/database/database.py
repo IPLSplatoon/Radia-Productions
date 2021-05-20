@@ -1,17 +1,20 @@
 import motor.motor_asyncio
 from .objects import GuildInfo, CommInfo
 from typing import List, Optional
+from aredis import StrictRedis
 
 
-class MongoConnector:
-    def __init__(self, mongo_uri: str, db_name: str):
+class DBConnector:
+    def __init__(self, mongo_uri: str, mongo_db_name: str, redis_url: str):
         """
         Constructor
         :param mongo_uri: Mongo DB URI
-        :param db_name: Database Name
+        :param mongo_db_name: Database Name
+        :param redis_url: Redis database URL
         """
         self.__client = motor.motor_asyncio.AsyncIOMotorClient(mongo_uri)
-        self.__db = self.__client[db_name]
+        self.__db = self.__client[mongo_db_name]
+        self.__redis_client = StrictRedis.from_url(redis_url)
 
     async def get_guild_info(self, guild_id: str) -> Optional[GuildInfo]:
         """

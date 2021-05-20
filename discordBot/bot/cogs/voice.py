@@ -4,7 +4,7 @@ Handles all commands & event handler for voice channels
 import discord
 from discord.ext import commands
 
-from bot.mongo import MongoConnector
+from bot.database import DBConnector
 from bot import utils
 
 
@@ -14,7 +14,7 @@ class Voice(commands.Cog):
 
     @property
     def database(self):
-        assert isinstance(self.bot.mongo, MongoConnector)
+        assert isinstance(self.bot.mongo, DBConnector)
         return self.bot.mongo
 
     @commands.group()
