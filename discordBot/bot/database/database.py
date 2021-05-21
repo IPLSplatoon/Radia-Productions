@@ -173,9 +173,7 @@ class DBConnector:
     async def add_custom_command(self, guild_id: str, command_name: str, command_message: str):
         instance = {
             "$set": {
-                "customCommands": {
-                    command_name: command_message
-                }
+                f"customCommands.{command_name}": command_message
             }
         }
         response = await self.__db.server.update_one({"discordGuildID": guild_id}, instance, upsert=True)
