@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import Request, Depends, FastAPI
 import os
 import logging
 from mongo import MongoConnector
@@ -49,14 +49,15 @@ if not (mongo_uri := os.getenv("MONGODBURI")):
 
 
 def create_app():
+    database = MongoConnector(mongo_uri, "radiaTwitch")
+
     app = FastAPI(
         title="Radia Production API",
         description="Inkling Performance Labs Production API Service",
         version="1.0.0",
         docs_url=None,
-        redoc_url="/docs"
+        redoc_url="/docs",
     )
-    database = MongoConnector(mongo_uri, "radiaTwitch")
 
     app.add_event_handler("startup", database.connect_db)
     app.add_event_handler("shutdown", database.close_mongo_connection)
@@ -86,6 +87,7 @@ def create_app():
         return response
 
     return app
+
 
 app = create_app()
 

@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Request, HTTPException, Header
+from fastapi import APIRouter, Request, HTTPException, Depends
+from app.dependencies import get_api_key
 from pydantic import BaseModel
 from typing import Optional, List
 
@@ -23,13 +24,10 @@ class RemoveCommInfo(BaseModel):
 
 
 @router.get("/guild/{guild_id}", response_model=List[CommInfo])
-async def guild_live_commentators(request: Request, guild_id, Authorization: str = Header(...)):
+async def guild_live_commentators(request: Request, guild_id, security_profile=Depends(get_api_key)):
     """
     The current commentator in voice channel by Discord Guild ID
     """
-    auth = await request.state.db.get_access_key_details(Authorization)
-    if not auth:
-        raise HTTPException(status_code=401, detail="Not Authorised")
     info = await request.state.db.get_current_commentators_guild(guild_id)
     if info:
         return_list = []
@@ -41,13 +39,10 @@ async def guild_live_commentators(request: Request, guild_id, Authorization: str
 
 
 @router.get("/twitch/{twitch_name}", response_model=List[CommInfo])
-async def twitch_live_commentators(request: Request, twitch_name, Authorization: str = Header(...)):
+async def twitch_live_commentators(request: Request, twitch_name, security_profile=Depends(get_api_key)):
     """
     The current commentator in voice channel by Twitch Channel Name
     """
-    auth = await request.state.db.get_access_key_details(Authorization)
-    if not auth:
-        raise HTTPException(status_code=401, detail="Not Authorised")
     info = await request.state.db.get_current_commentators_twitch(twitch_name)
     if info:
         return_list = []
@@ -60,14 +55,11 @@ async def twitch_live_commentators(request: Request, twitch_name, Authorization:
 
 @router.post("/guild/{guild_id}", response_model=List[CommInfo])
 async def set_guild_live_commentators(request: Request, guild_id,
-                                      commentators: List[CreateCommInfo], Authorization: str = Header(...)):
+                                      commentators: List[CreateCommInfo], security_profile=Depends(get_api_key)):
     """
     Set guild live commentators
     """
-    auth = await request.state.db.get_access_key_details(Authorization)
-    if not auth:
-        raise HTTPException(status_code=401, detail="Not Authorised")
-    if not auth.check_guilds(guild_id):
+    if not security_profile.check_guilds(guild_id):
         raise HTTPException(status_code=401, detail="Not Authorised for guild")
     comms_list = []
     for x in commentators:
@@ -84,14 +76,11 @@ async def set_guild_live_commentators(request: Request, guild_id,
 
 @router.patch("/guild/{guild_id}/remove", response_model=List[CommInfo])
 async def remove_guild_live_commentators(request: Request, guild_id, commentator: RemoveCommInfo,
-                                         Authorization: str = Header(...)):
+                                         security_profile=Depends(get_api_key)):
     """
     Remove a commentator from guild love commentators
     """
-    auth = await request.state.db.get_access_key_details(Authorization)
-    if not auth:
-        raise HTTPException(status_code=401, detail="Not Authorised")
-    if not auth.check_guilds(guild_id):
+    if not security_profile.check_guilds(guild_id):
         raise HTTPException(status_code=401, detail="Not Authorised for guild")
     response = await request.state.db.remove_guild_commentator(guild_id, commentator.discordUserID)
     if response:
@@ -105,14 +94,11 @@ async def remove_guild_live_commentators(request: Request, guild_id, commentator
 
 @router.patch("/guild/{guild_id}/add", response_model=List[CommInfo])
 async def add_guild_live_commentators(request: Request, guild_id, commentator: CreateCommInfo,
-                                      Authorization: str = Header(...)):
+                                      security_profile=Depends(get_api_key)):
     """
     Add a commentator to guild love commentators
     """
-    auth = await request.state.db.get_access_key_details(Authorization)
-    if not auth:
-        raise HTTPException(status_code=401, detail="Not Authorised")
-    if not auth.check_guilds(guild_id):
+    if not security_profile.check_guilds(guild_id):
         raise HTTPException(status_code=401, detail="Not Authorised for guild")
     response = await request.state.db.add_guild_commentator(guild_id, commentator)
     if response:

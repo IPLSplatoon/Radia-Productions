@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Request, HTTPException, Header
+from fastapi import APIRouter, Request, HTTPException, Depends
+from app.dependencies import get_api_key
 from pydantic import BaseModel
 from typing import Optional
 
@@ -13,13 +14,10 @@ class GuildInformation(BaseModel):
 
 
 @router.get("/guild/{guild_id}", response_model=GuildInformation)
-async def guild_info(request: Request, guild_id, Authorization: str = Header(...)):
+async def guild_info(request: Request, guild_id, security_profile=Depends(get_api_key)):
     """
     The current commentator in voice channel by Discord Guild ID
     """
-    auth = await request.state.db.get_access_key_details(Authorization)
-    if not auth:
-        raise HTTPException(status_code=401, detail="Not Authorised")
     info = await request.state.db.get_guild_info(guild_id)
     if info:
         return {
@@ -33,13 +31,10 @@ async def guild_info(request: Request, guild_id, Authorization: str = Header(...
 
 
 @router.get("/twitch/{twitch_name}", response_model=GuildInformation)
-async def twitch_info(request: Request, twitch_name, Authorization: str = Header(...)):
+async def twitch_info(request: Request, twitch_name, security_profile=Depends(get_api_key)):
     """
     The current commentator in voice channel by Twitch Channel Name
     """
-    auth = await request.state.db.get_access_key_details(Authorization)
-    if not auth:
-        raise HTTPException(status_code=401, detail="Not Authorised")
     info = await request.state.db.get_twitch_info(twitch_name)
     if info:
         return {
