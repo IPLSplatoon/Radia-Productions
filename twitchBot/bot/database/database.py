@@ -127,7 +127,7 @@ class DBConnector:
         instance = {
             "$pull": {
                 "currentComms": {
-                    "discordUserID": commentators_discord_id
+                    "discordUserID": f"{commentators_discord_id}"
                 }
             }
         }
@@ -145,9 +145,9 @@ class DBConnector:
     async def set_comms_info(self, discord_user_id: str, name: str, twitter: str, pronouns: str):
         instance = {
             "$set": {
-                "name": name,
-                "twitter": twitter,
-                "pronouns": pronouns
+                "name": f"{name}",
+                "twitter": f"{twitter}",
+                "pronouns": f"{pronouns}"
             }
         }
         return await self.__db.commenators.update_one({"discordUserID": discord_user_id}, instance, upsert=True)
@@ -173,9 +173,7 @@ class DBConnector:
     async def add_custom_command(self, guild_id: str, command_name: str, command_message: str):
         instance = {
             "$set": {
-                "customCommands": {
-                    command_name: command_message
-                }
+                f"customCommands.{command_name}": f"{command_message}"
             }
         }
         response = await self.__db.server.update_one({"discordGuildID": guild_id}, instance, upsert=True)
@@ -191,3 +189,6 @@ class DBConnector:
         response = await self.__db.server.update_one({"discordGuildID": guild_id}, instance)
         await self.__update_redis_twitch({"discordGuildID": guild_id})
         return response
+
+    async def dump_refresh_cache(self, guild_id: str):
+        await self.__update_redis_twitch({"discordGuildID": guild_id})

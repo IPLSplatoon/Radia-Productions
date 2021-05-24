@@ -68,8 +68,8 @@ class CommInfo:
         :return: dict for MongoDB
         """
         return {
-            "discordUserID": self.discord_user_id,
-            "twitter": self.twitter,
-            "name": self.name,
-            "pronouns": self.pronouns
+            "discordUserID": f"{self.discord_user_id}",
+            "twitter": f"{self.twitter}",
+            "name": f"{self.name}",
+            "pronouns": f"{self.pronouns}"
         }
