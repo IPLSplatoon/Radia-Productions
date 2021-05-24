@@ -78,9 +78,17 @@ class AccessKey:
     def __init__(self, query_data: dict):
         self.username = query_data.get("username")
         self.__access_key = query_data.get("accessKey")
+        self.__guilds = query_data.get("guilds")
 
     def check_access_key(self, access_key: str) -> bool:
         if self.__access_key == access_key:
             return True
         else:
             return False
+
+    def check_guilds(self, guild: str) -> bool:
+        if guild in self.__guilds:
+            return True
+        else:
+            return False
+

@@ -3,6 +3,7 @@ import os
 import logging
 from mongo import MongoConnector
 from routers import commentators, live, organisation
+import uvicorn
 
 debug = os.getenv("DEBUG")
 
@@ -87,3 +88,6 @@ def create_app():
     return app
 
 app = create_app()
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost", port=2000)
