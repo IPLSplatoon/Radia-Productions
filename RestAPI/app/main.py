@@ -1,7 +1,7 @@
-from fastapi import Request, Depends, FastAPI
+from fastapi import Request, FastAPI
 import os
 import logging
-from mongo import MongoConnector
+from database import DBConnector
 from routers import commentators, live, organisation
 import uvicorn
 
@@ -49,7 +49,7 @@ if not (mongo_uri := os.getenv("MONGODBURI")):
 
 
 def create_app():
-    database = MongoConnector(mongo_uri, "radiaTwitch")
+    database = DBConnector(mongo_uri, "radiaTwitch")
 
     app = FastAPI(
         title="Radia Production API",

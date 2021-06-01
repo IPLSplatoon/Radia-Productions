@@ -1,26 +1,7 @@
 """
 Class design for objects
 """
-from typing import Optional
-
-
-class CommInfo:
-    twitter: Optional[str]
-    name: Optional[str]
-    pronouns: Optional[str]
-
-    def __init__(self, query_data: dict):
-        self.twitter = query_data.get("twitter")
-        self.name = query_data.get("name")
-        self.pronouns = query_data.get("pronouns")
-
-    @property
-    def dict(self):
-        return {
-            "twitter": self.twitter,
-            "name": self.name,
-            "pronouns": self.pronouns,
-        }
+from typing import Optional, List
 
 
 class CommentatorProfile:
@@ -40,7 +21,7 @@ class CommentatorProfile:
         self.no_alert = query_data.get("noAlert", False)
 
     @property
-    def dict(self):
+    def dict(self) -> dict:
         return{
             "discord_user_id": self.discord_user_id,
             "twitter": self.twitter,
@@ -50,13 +31,22 @@ class CommentatorProfile:
             "no_alert": self.no_alert
         }
 
+    @property
+    def live_dict(self) -> dict:
+        return {
+            "discord_user_id": self.discord_user_id,
+            "twitter": self.twitter,
+            "name": self.name,
+            "pronouns": self.pronouns,
+        }
+
 
 class GuildInfo:
     guild_id: Optional[str]
     twitch_channel: Optional[str]
     vc_channel_id: Optional[str]
     alert_channel_id: Optional[str]
-    current_comms: Optional[dict]
+    current_comms: Optional[List[CommentatorProfile]]
     bracket_link: Optional[str]
     tournament_name: Optional[str]
 
@@ -65,13 +55,24 @@ class GuildInfo:
         Init
         :param query_data:
         """
-        self.guild_id = query_data.get("discordGuildId")
+        self.guild_id = query_data.get("discordGuildID")
         self.twitch_channel = query_data.get("twitchChannelName")
         self.vc_channel_id = query_data.get("discordVCID")
         self.alert_channel_id = query_data.get("alertChannelID")
-        self.current_comms = query_data.get("currentComms")
         self.bracket_link = query_data.get("bracketLink")
         self.tournament_name = query_data.get("tournamentName")
+        self.current_comms = []
+        comms = query_data.get("currentComms")
+        if comms:
+            for x in comms:
+                self.current_comms.append(CommentatorProfile(x))
+
+    @property
+    def live_comms_dict(self) -> List[dict]:
+        return_dict = []
+        for x in self.current_comms:
+            return_dict.append(x.live_dict)
+        return return_dict
 
 
 class AccessKey:
