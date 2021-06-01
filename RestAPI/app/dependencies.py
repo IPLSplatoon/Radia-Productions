@@ -1,6 +1,6 @@
 from fastapi import Request, Security, HTTPException
 from fastapi.security.api_key import APIKeyHeader
-from database import AccessKey
+from app.database import AccessKey
 from typing import Optional
 
 header_authorization = APIKeyHeader(name="Authorization", auto_error=True)

@@ -1,6 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from .objects import CommentatorProfile, AccessKey, GuildInfo
-from typing import List, Optional
+from typing import Optional
 
 
 class DBConnector:

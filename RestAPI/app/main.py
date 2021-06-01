@@ -1,8 +1,8 @@
 from fastapi import Request, FastAPI
 import os
 import logging
-from database import DBConnector
-from routers import commentators, live, organisation
+from app.database import DBConnector
+from app.routers import commentators, live, organisation
 # import uvicorn
 
 debug = os.getenv("DEBUG")
