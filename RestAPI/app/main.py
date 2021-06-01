@@ -1,4 +1,5 @@
 from fastapi import Request, FastAPI
+from fastapi.openapi.utils import get_openapi
 import os
 import logging
 from app.database import DBConnector
@@ -54,9 +55,9 @@ def create_app():
     app = FastAPI(
         title="Radia Production API",
         description="Inkling Performance Labs Production API Service",
-        version="1.0.0",
+        version="1.1.0",
         docs_url=None,
-        redoc_url="/docs",
+        redoc_url="/docs"
     )
 
     app.add_event_handler("startup", database.connect_db)
@@ -86,6 +87,43 @@ def create_app():
         response = await call_next(request)
         return response
 
+    def custom_openapi():
+        if app.openapi_schema:
+            return app.openapi_schema
+        openapi_schema = get_openapi(
+            title="Radia Production API",
+            description="Inkling Performance Labs Production API Service",
+            version="1.1.0",
+            routes=app.routes,
+            tags=[
+                {
+                    "name": "commentators",
+                    "description": "Retrieve and set details on commentators"
+                },
+                {
+                    "name": "live",
+                    "description": "Retrieve on commentators currently live in a Discord Guild/Twitch Channel"
+                },
+                {
+                    "name": "organisation",
+                    "description": "Retrieve information about a Discord Guild/Twitch Channel settings"
+                }
+            ]
+        )
+        security = openapi_schema["components"]["securitySchemes"]
+        security["APIKeyHeader"]["description"] = "An API Authorization token must be provided to be able to use an " \
+                                                  "endpoint, <br> this can be set in the under as like the following." \
+                                                  " `Authorization Your_Authorization_Key` <br> A Key can be issued " \
+                                                  "by IPL Production Team."
+        openapi_schema["info"]["x-logo"] = {
+            "url": "https://store.iplabs.work/production.png",
+            "href": "https://iplabs.work",
+            "altText": "Inkling Performance Labs Productions"
+        }
+        app.openapi_schema = openapi_schema
+        return app.openapi_schema
+
+    app.openapi = custom_openapi
     return app
 
 

@@ -68,9 +68,8 @@ async def set_commentator_profile(request: Request, commentator: CreateCommentat
     """
     Set Details commentator via their Discord ID
     """
-    response = await request.state.db.set_commentators_profile({"discordUserID": f"{discord_id}"}, commentator.dict())
+    response = await request.state.db.set_commentator_profile({"discordUserID": f"{discord_id}"}, commentator.dict())
     if response:
         return response.dict
     else:
         raise HTTPException(status_code=500, detail="Internal error writing to database.")
-# = Body(default=None, regex=r"^[0-9]*$")
