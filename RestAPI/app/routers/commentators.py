@@ -37,7 +37,9 @@ class CreateCommentatorProfile(BaseModel):
     no_alert: Optional[bool] = Field(description="if the user wants any alerts to be disabled.", default=False)
 
 
-@router.get("/profile/twitter/{twitter_handle}", response_model=CommentatorProfile)
+@router.get("/profile/twitter/{twitter_handle}", response_model=CommentatorProfile, responses={
+    404: {"description": "Profile not found"},
+})
 async def twitter_profile(request: Request, twitter_handle: str, security_profile=Depends(get_api_key)):
     """
     Details on a commentator via their twitter handle
@@ -49,7 +51,9 @@ async def twitter_profile(request: Request, twitter_handle: str, security_profil
         raise HTTPException(status_code=404, detail="Profile not found")
 
 
-@router.get("/profile/discord/{discord_id}", response_model=CommentatorProfile)
+@router.get("/profile/discord/{discord_id}", response_model=CommentatorProfile, responses={
+    404: {"description": "Profile not found"},
+})
 async def discord_profile(request: Request, discord_id: str, security_profile=Depends(get_api_key)):
     """
     Details on a commentator via their Discord ID
@@ -61,7 +65,10 @@ async def discord_profile(request: Request, discord_id: str, security_profile=De
         raise HTTPException(status_code=404, detail="Profile not found")
 
 
-@router.post("/profile/discord/{discord_id}", response_model=CommentatorProfile)
+@router.post("/profile/discord/{discord_id}", response_model=CommentatorProfile, responses={
+    500: {"description": "Internal error writing to database"},
+    403: {"description": "FORBIDDEN: You're disabled from setting commentator details."}
+})
 async def set_commentator_profile(request: Request, commentator: CreateCommentatorProfile,
                                   discord_id: str = Query(None, regex=r"^[0-9]*$"),
                                   security_profile=Depends(get_api_key)):

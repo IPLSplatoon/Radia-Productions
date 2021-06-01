@@ -23,7 +23,9 @@ class CommInfo(BaseModel):
         }
 
 
-@router.get("/guild/{guild_id}", response_model=List[CommInfo])
+@router.get("/guild/{guild_id}", response_model=List[CommInfo], responses={
+    404: {"description": "No such organisation"},
+})
 async def guild_live_commentators(request: Request, guild_id, security_profile=Depends(get_api_key)):
     """
     The current commentator in voice channel by Discord Guild ID
@@ -32,10 +34,12 @@ async def guild_live_commentators(request: Request, guild_id, security_profile=D
     if info:
         return info.live_comms_dict
     else:
-        raise HTTPException(status_code=404, detail="No such guild")
+        raise HTTPException(status_code=404, detail="No such organisation")
 
 
-@router.get("/twitch/{twitch_name}", response_model=List[CommInfo])
+@router.get("/twitch/{twitch_name}", response_model=List[CommInfo], responses={
+    404: {"description": "No such organisation"},
+})
 async def twitch_live_commentators(request: Request, twitch_name, security_profile=Depends(get_api_key)):
     """
     The current commentator in voice channel by Twitch Channel Name
@@ -44,4 +48,4 @@ async def twitch_live_commentators(request: Request, twitch_name, security_profi
     if info:
         return info.live_comms_dict
     else:
-        raise HTTPException(status_code=404, detail="No such channel")
+        raise HTTPException(status_code=404, detail="No such organisation")

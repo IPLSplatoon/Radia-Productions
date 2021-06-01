@@ -23,7 +23,9 @@ class GuildInformation(BaseModel):
         }
 
 
-@router.get("/guild/{guild_id}", response_model=GuildInformation)
+@router.get("/guild/{guild_id}", response_model=GuildInformation, responses={
+    404: {"description": "No such organisation"},
+})
 async def guild_info(request: Request, guild_id, security_profile=Depends(get_api_key)):
     """
     The current commentator in voice channel by Discord Guild ID
@@ -37,10 +39,12 @@ async def guild_info(request: Request, guild_id, security_profile=Depends(get_ap
             "tournament_name": info.tournament_name
         }
     else:
-        raise HTTPException(status_code=404, detail="No commentator")
+        raise HTTPException(status_code=404, detail="No such organisation")
 
 
-@router.get("/twitch/{twitch_name}", response_model=GuildInformation)
+@router.get("/twitch/{twitch_name}", response_model=GuildInformation, responses={
+    404: {"description": "No such organisation"},
+})
 async def twitch_info(request: Request, twitch_name, security_profile=Depends(get_api_key)):
     """
     The current commentator in voice channel by Twitch Channel Name
@@ -54,4 +58,4 @@ async def twitch_info(request: Request, twitch_name, security_profile=Depends(ge
             "tournament_name": info.tournament_name
         }
     else:
-        raise HTTPException(status_code=404, detail="No commentator")
+        raise HTTPException(status_code=404, detail="No such organisation")

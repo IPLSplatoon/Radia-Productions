@@ -92,7 +92,8 @@ def create_app():
             return app.openapi_schema
         openapi_schema = get_openapi(
             title="Radia Production API",
-            description="Inkling Performance Labs Production API Service",
+            description="Inkling Performance Labs Production API Service. <br>"
+                        "URL: https://github.com/IPLSplatoon/Radia-Productions | Documentation Licence: CC-BY 4.0",
             version="1.1.0",
             routes=app.routes,
             tags=[
@@ -112,9 +113,9 @@ def create_app():
         )
         security = openapi_schema["components"]["securitySchemes"]
         security["APIKeyHeader"]["description"] = "An API Authorization token must be provided to be able to use an " \
-                                                  "endpoint, <br> this can be set in the under as like the following." \
-                                                  " `Authorization Your_Authorization_Key` <br> A Key can be issued " \
-                                                  "by IPL Production Team."
+                                                  "endpoint. <br> To do this set you HEADER can be set as like the " \
+                                                  "following. `Authorization: Your_Authorization_Key` " \
+                                                  "<br> A Key can be issued by IPL Production Team."
         openapi_schema["info"]["x-logo"] = {
             "url": "https://store.iplabs.work/production.png",
             "href": "https://iplabs.work",
