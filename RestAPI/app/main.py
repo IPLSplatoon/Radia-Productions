@@ -3,7 +3,7 @@ import os
 import logging
 from database import DBConnector
 from routers import commentators, live, organisation
-import uvicorn
+# import uvicorn
 
 debug = os.getenv("DEBUG")
 
@@ -91,5 +91,5 @@ def create_app():
 
 app = create_app()
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=2000)
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="localhost", port=2000)
