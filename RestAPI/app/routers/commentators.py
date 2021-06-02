@@ -84,7 +84,7 @@ async def set_commentator_profile(request: Request, commentator: CreateCommentat
     # Remove @ Symbol if present
     if data["twitter"][0] == "@":
         data["twitter"] = data["twitter"][1:]
-    response = await request.state.db.set_commentator_profile({"discordUserID": f"{discord_id}"}, commentator.dict())
+    response = await request.state.db.set_commentator_profile({"discordUserID": f"{discord_id}"}, data)
     if response:
         return response.dict
     else:
