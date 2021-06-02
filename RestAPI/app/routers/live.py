@@ -25,6 +25,8 @@ class CommInfo(BaseModel):
 
 @router.get("/guild/{guild_id}", response_model=List[CommInfo], responses={
     404: {"description": "No such organisation"},
+    401: {"description": "Invalid API Key"},
+    403: {"description": "Not Authenticated"}
 })
 async def guild_live_commentators(request: Request, guild_id, security_profile=Depends(get_api_key)):
     """
@@ -39,6 +41,8 @@ async def guild_live_commentators(request: Request, guild_id, security_profile=D
 
 @router.get("/twitch/{twitch_name}", response_model=List[CommInfo], responses={
     404: {"description": "No such organisation"},
+    401: {"description": "Invalid API Key"},
+    403: {"description": "Not Authenticated"}
 })
 async def twitch_live_commentators(request: Request, twitch_name, security_profile=Depends(get_api_key)):
     """
