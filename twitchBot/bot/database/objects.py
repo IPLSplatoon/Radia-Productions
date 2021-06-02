@@ -25,6 +25,7 @@ class GuildInfo:
         self.current_comms = query_data.get("currentComms")
         self.bracket_link = query_data.get("bracketLink")
         self.tournament_name = query_data.get("tournamentName")
+        self.discord_link = query_data.get("discordLink")
         self.custom_command = query_data.get("customCommands", {})
 
     @property
@@ -37,7 +38,8 @@ class GuildInfo:
             "currentComms": self.current_comms,
             "bracketLink": self.bracket_link,
             "tournamentName": self.tournament_name,
-            "customCommands": self.custom_command
+            "customCommands": self.custom_command,
+            "discordLink": self.discord_link
         }
 
     def retrieve_custom_command(self, command_name: str) -> Optional[CommandInfo]:
@@ -68,8 +70,8 @@ class CommInfo:
         :return: dict for MongoDB
         """
         return {
-            "discordUserID": self.discord_user_id,
-            "twitter": self.twitter,
-            "name": self.name,
-            "pronouns": self.pronouns
+            "discordUserID": f"{self.discord_user_id}",
+            "twitter": f"{self.twitter}",
+            "name": f"{self.name}",
+            "pronouns": f"{self.pronouns}"
         }
