@@ -1,40 +1,8 @@
 from fastapi import APIRouter, Request, HTTPException, Depends, Query
 from app.dependencies import get_api_key
-from pydantic import BaseModel, Field
-from typing import Optional
+from app.models import CommentatorProfile, CreateCommentatorProfile
 
 router = APIRouter()
-
-
-class CommentatorProfile(BaseModel):
-    discord_user_id: Optional[str] = Field(description="User's Discord User ID")
-    twitter: Optional[str] = Field(description="User's Twitter handle without '@' symbol")
-    name: Optional[str] = Field(description="User's Name")
-    pronouns: Optional[str] = Field(description="User's preferred pronouns")
-    no_show: bool = Field(description="If the user set not to show up on commentator list. If TRUE, then they do NOT "
-                                      "show up")
-    no_alert: bool = Field(description="if the user wants any alerts to be disabled.")
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "discord_user_id": "113026708071821312",
-                "twitter": "vlee888",
-                "name": "Vincent",
-                "pronouns": "They/Them",
-                "no_show": False,
-                "no_alert": False
-            }
-        }
-
-
-class CreateCommentatorProfile(BaseModel):
-    twitter: str = Field(description="User's Twitter handle.", regex=r"^@?(\w){1,15}$")
-    name: str = Field(description="User's Name", max_length=48)
-    pronouns: str = Field(description="User's preferred pronouns", max_length=48)
-    no_show: Optional[bool] = Field(description="If the user set not to show up on commentator list. If TRUE, "
-                                                "then they do NOT show up", default=False)
-    no_alert: Optional[bool] = Field(description="if the user wants any alerts to be disabled.", default=False)
 
 
 @router.get("/profile/twitter/{twitter_handle}", response_model=CommentatorProfile, responses={

@@ -1,26 +1,8 @@
 from fastapi import APIRouter, Request, HTTPException, Depends
 from app.dependencies import get_api_key
-from pydantic import BaseModel, Field
-from typing import Optional
+from app.models import GuildInformation
 
 router = APIRouter()
-
-
-class GuildInformation(BaseModel):
-    guild_id: Optional[str] = Field(description="Entry's Discord Guild ID")
-    twitch_channel: Optional[str] = Field(description="Entry's Twitch channel name")
-    bracket_link: Optional[str] = Field(description="Entry's URL link to last set bracket")
-    tournament_name: Optional[str] = Field(description="Entry's last set tournament name")
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "guild_id": "805933686745726987",
-                "twitch_channel": "iplsplatoon",
-                "bracket_link": "https://iplabs.ink/bracket",
-                "tournament_name": "Unnamed Tournament: Ladder Edition"
-            }
-        }
 
 
 @router.get("/guild/{guild_id}", response_model=GuildInformation, responses={

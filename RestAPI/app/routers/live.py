@@ -1,26 +1,9 @@
 from fastapi import APIRouter, Request, HTTPException, Depends
 from app.dependencies import get_api_key
-from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import List
+from app.models import CommInfo
 
 router = APIRouter()
-
-
-class CommInfo(BaseModel):
-    discord_user_id: Optional[str] = Field(description="User's Discord User ID")
-    twitter: Optional[str] = Field(description="User's Twitter handle without '@' symbol")
-    name: Optional[str] = Field(description="User's Name")
-    pronouns: Optional[str] = Field(description="User's preferred pronouns")
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "discord_user_id": "113026708071821312",
-                "twitter": "vlee888",
-                "name": "Vincent",
-                "pronouns": "They/Them",
-            }
-        }
 
 
 @router.get("/guild/{guild_id}", response_model=List[CommInfo], responses={
