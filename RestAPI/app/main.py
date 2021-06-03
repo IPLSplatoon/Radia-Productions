@@ -3,7 +3,7 @@ from fastapi.openapi.utils import get_openapi
 import os
 import logging
 from app.database import DBConnector
-from app.routers import commentators, live, organisation
+from app.routers import commentators, live, organisation, mocking
 # import uvicorn
 
 debug = os.getenv("DEBUG")
@@ -81,6 +81,12 @@ def create_app():
         tags=['organisation']
     )
 
+    app.include_router(
+        mocking.router,
+        prefix="/mock",
+        tags=['mocking']
+    )
+
     @app.middleware("http")
     async def db_session_middleware(request: Request, call_next):
         request.state.db = database
@@ -108,6 +114,10 @@ def create_app():
                 {
                     "name": "organisation",
                     "description": "Retrieve information about a Discord Guild/Twitch Channel settings"
+                },
+                {
+                    "name": "mocking",
+                    "description": "Used for mocking other endpoints in testing scenario"
                 }
             ]
         )
