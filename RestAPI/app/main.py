@@ -55,7 +55,7 @@ def create_app():
     app = FastAPI(
         title="Radia Production API",
         description="Inkling Performance Labs Production API Service",
-        version="1.1.0",
+        version="1.2.0",
         docs_url=None,
         redoc_url="/docs"
     )
@@ -86,6 +86,7 @@ def create_app():
         prefix="/commands",
         tags=['commands']
     )
+
     app.include_router(
         mocking.router,
         prefix="/mock",
@@ -105,7 +106,7 @@ def create_app():
             title="Radia Production API",
             description="Inkling Performance Labs Production API Service. <br>"
                         "URL: https://github.com/IPLSplatoon/Radia-Productions | Documentation Licence: CC-BY 4.0",
-            version="1.1.0",
+            version="1.2.0",
             routes=app.routes,
             tags=[
                 {
@@ -124,10 +125,11 @@ def create_app():
                     "name": "commands",
                     "description": "Retrieve custom commands for a Discord Guild/Twitch Channel"
                 },
+                {
                     "name": "mocking",
                     "description": "Used for mocking other endpoints in testing scenario. Does **not** support verify"
                                    "the header `Authorization` apiKey!"
-                }
+                },
             ]
         )
         security = openapi_schema["components"]["securitySchemes"]
