@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Query
 from typing import List
-from app.models import CommInfo, GuildInformation, CommentatorProfile, CreateCommentatorProfile
+from app.models import CommInfo, GuildInformation, CommentatorProfile, CreateCommentatorProfile, CustomCommands
 
 router = APIRouter()
 
@@ -21,11 +21,7 @@ def live_mock(num_comms: str):
     return return_list
 
 
-@router.get("/live/guild/{guild_id}", response_model=List[CommInfo], responses={
-    404: {"description": "No such organisation"},
-    401: {"description": "Invalid API Key"},
-    403: {"description": "Not Authenticated"}
-})
+@router.get("/live/guild/{guild_id}", response_model=List[CommInfo])
 async def guild_live_commentators(request: Request, guild_id: str):
     """
     Mock for `/live/guild/` with `guild_id` being number of commentators you want returned.
@@ -33,11 +29,7 @@ async def guild_live_commentators(request: Request, guild_id: str):
     return live_mock(guild_id)
 
 
-@router.get("/live/twitch/{twitch_name}", response_model=List[CommInfo], responses={
-    404: {"description": "No such organisation"},
-    401: {"description": "Invalid API Key"},
-    403: {"description": "Not Authenticated"}
-})
+@router.get("/live/twitch/{twitch_name}", response_model=List[CommInfo])
 async def twitch_live_commentators(request: Request, twitch_name: str):
     """
     Mock for `/live/twitch/` with `twitch_name` being number of commentators you want returned.
@@ -45,11 +37,7 @@ async def twitch_live_commentators(request: Request, twitch_name: str):
     return live_mock(twitch_name)
 
 
-@router.get("/organisation/guild/{guild_id}", response_model=GuildInformation, responses={
-    404: {"description": "No such organisation"},
-    401: {"description": "Invalid API Key"},
-    403: {"description": "Not Authenticated"}
-})
+@router.get("/organisation/guild/{guild_id}", response_model=GuildInformation)
 async def guild_info(request: Request, guild_id):
     """
     Mock for `/organisation/guild/`
@@ -62,11 +50,7 @@ async def guild_info(request: Request, guild_id):
     }
 
 
-@router.get("/organisation/twitch/{twitch_name}", response_model=GuildInformation, responses={
-    404: {"description": "No such organisation"},
-    401: {"description": "Invalid API Key"},
-    403: {"description": "Not Authenticated"}
-})
+@router.get("/organisation/twitch/{twitch_name}", response_model=GuildInformation)
 async def twitch_info(request: Request, twitch_name):
     """
     Mock for `/organisation/twitch/`
@@ -79,11 +63,7 @@ async def twitch_info(request: Request, twitch_name):
     }
 
 
-@router.get("/commentators/profile/twitter/{twitter_handle}", response_model=CommentatorProfile, responses={
-    404: {"description": "Profile not found"},
-    401: {"description": "Invalid API Key"},
-    403: {"description": "Not Authenticated"}
-})
+@router.get("/commentators/profile/twitter/{twitter_handle}", response_model=CommentatorProfile)
 async def twitter_profile(request: Request, twitter_handle: str):
     """
     Mock for `/profile/twitter/`
@@ -98,11 +78,7 @@ async def twitter_profile(request: Request, twitter_handle: str):
     }
 
 
-@router.get("/commentators/profile/discord/{discord_id}", response_model=CommentatorProfile, responses={
-    404: {"description": "Profile not found"},
-    401: {"description": "Invalid API Key"},
-    403: {"description": "Not Authenticated"}
-})
+@router.get("/commentators/profile/discord/{discord_id}", response_model=CommentatorProfile)
 async def discord_profile(request: Request, discord_id: str):
     """
     Mock for `/profile/discord/`
@@ -117,11 +93,7 @@ async def discord_profile(request: Request, discord_id: str):
     }
 
 
-@router.post("/commentators/profile/discord/{discord_id}", response_model=CommentatorProfile, responses={
-    500: {"description": "Internal error writing to database"},
-    401: {"description": "Invalid API Key"},
-    403: {"description": "FORBIDDEN: You're disabled from setting commentator details. / Not Authenticated"}
-})
+@router.post("/commentators/profile/discord/{discord_id}", response_model=CommentatorProfile)
 async def set_commentator_profile(request: Request, commentator: CreateCommentatorProfile,
                                   discord_id: str = Query(None, regex=r"^[0-9]*$")):
     """
@@ -133,3 +105,33 @@ async def set_commentator_profile(request: Request, commentator: CreateCommentat
         data["twitter"] = data["twitter"][1:]
     data['discord_user_id'] = discord_id
     return data
+
+
+def custom_command(count: str) -> List[dict]:
+    return_list = []
+    try:
+        num = int(count)
+    except ValueError:
+        num = 3
+    for x in range(num):
+        return_list.append({
+            "name": f"command{x+1}",
+            "contents": f"This custom return for custom command {x+1}"
+        })
+    return return_list
+
+
+@router.get("/commands/guild/{guild_id}", response_model=List[CustomCommands])
+async def guild_commands(request: Request, guild_id):
+    """
+    Mock for `/commands/guild/` with, with `guild_id` being number of commands you want returned.
+    """
+    return custom_command(guild_id)
+
+
+@router.get("/commands/twitch/{twitch_name}", response_model=List[CustomCommands])
+async def twitch_commands(request: Request, twitch_name):
+    """
+    Mock for `/commands/twitch/` with,, with `twitch_name` being number of commands you want returned.
+    """
+    return custom_command(twitch_name)

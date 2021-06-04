@@ -3,7 +3,7 @@ from fastapi.openapi.utils import get_openapi
 import os
 import logging
 from app.database import DBConnector
-from app.routers import commentators, live, organisation, mocking
+from app.routers import commentators, live, organisation, commands, mocking
 # import uvicorn
 
 debug = os.getenv("DEBUG")
@@ -82,6 +82,11 @@ def create_app():
     )
 
     app.include_router(
+        commands.router,
+        prefix="/commands",
+        tags=['commands']
+    )
+    app.include_router(
         mocking.router,
         prefix="/mock",
         tags=['mocking']
@@ -116,8 +121,12 @@ def create_app():
                     "description": "Retrieve information about a Discord Guild/Twitch Channel settings"
                 },
                 {
+                    "name": "commands",
+                    "description": "Retrieve custom commands for a Discord Guild/Twitch Channel"
+                },
                     "name": "mocking",
-                    "description": "Used for mocking other endpoints in testing scenario"
+                    "description": "Used for mocking other endpoints in testing scenario. Does **not** support verify"
+                                   "the header `Authorization` apiKey!"
                 }
             ]
         )

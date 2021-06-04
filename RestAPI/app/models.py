@@ -65,3 +65,16 @@ class CreateCommentatorProfile(BaseModel):
     no_show: Optional[bool] = Field(description="If the user set not to show up on commentator list. If TRUE, "
                                                 "then they do NOT show up", default=False)
     no_alert: Optional[bool] = Field(description="if the user wants any alerts to be disabled.", default=False)
+
+
+class CustomCommands(BaseModel):
+    name: str = Field(description="Name of custom command")
+    contents: str = Field(description="Contents of custom command")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "name": "helpus",
+                "contents": "Staff Application Form: https://iplabs.ink/helpus",
+            }
+        }

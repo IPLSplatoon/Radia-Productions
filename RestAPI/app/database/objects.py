@@ -4,6 +4,19 @@ Class design for objects
 from typing import Optional, List
 
 
+class Command:
+    def __init__(self, name: str, contents: str):
+        self.name = name
+        self.contents = contents
+
+    @property
+    def dict(self) -> dict:
+        return {
+            "name": self.name,
+            "contents": self.contents
+        }
+
+
 class CommentatorProfile:
     discord_user_id: Optional[str]
     twitter: Optional[str]
@@ -22,7 +35,7 @@ class CommentatorProfile:
 
     @property
     def dict(self) -> dict:
-        return{
+        return {
             "discord_user_id": self.discord_user_id,
             "twitter": self.twitter,
             "name": self.name,
@@ -61,6 +74,10 @@ class GuildInfo:
         self.alert_channel_id = query_data.get("alertChannelID")
         self.bracket_link = query_data.get("bracketLink")
         self.tournament_name = query_data.get("tournamentName")
+        self.custom_command = query_data.get("customCommands", {})
+        self.commands = []
+        for name in self.custom_command.keys():
+            self.commands.append(Command(name, self.custom_command[name]))
         self.current_comms = []
         comms = query_data.get("currentComms")
         if comms:
@@ -73,6 +90,13 @@ class GuildInfo:
         for x in self.current_comms:
             return_dict.append(x.live_dict)
         return return_dict
+
+    @property
+    def custom_command_list(self) -> List[dict]:
+        return_list = []
+        for x in self.commands:
+            return_list.append(x.dict)
+        return return_list
 
 
 class AccessKey:
@@ -92,4 +116,3 @@ class AccessKey:
             return True
         else:
             return False
-
