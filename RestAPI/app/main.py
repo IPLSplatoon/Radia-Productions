@@ -43,14 +43,23 @@ if sentry_env := os.getenv("SENTRY"):
 else:
     logging.info("static.env - 'SENTRY' key not found. Skipping Sentry.")
 
-# Load Database
+# Load Database credentials
 if not (mongo_uri := os.getenv("MONGODBURI")):
     logging.error("static.env - 'MONGODBURI' key not found. Cannot start bot.")
     raise EnvironmentError
 
+# Load Redis credentials
+if not (debug := os.getenv("DEBUG")):
+    redis_url = "redis://redis:6379"
+elif debug == "1":
+    if not (redis_url := os.getenv("REDISURL")):
+        redis_url = "redis://redis:6379"
+else:
+    redis_url = "redis://redis:6379"
+
 
 def create_app():
-    database = DBConnector(mongo_uri, "radiaTwitch")
+    database = DBConnector(mongo_uri, "radiaTwitch", redis_url)
 
     app = FastAPI(
         title="Radia Production API",

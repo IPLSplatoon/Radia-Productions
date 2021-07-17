@@ -78,3 +78,8 @@ class CustomCommands(BaseModel):
                 "contents": "Staff Application Form: https://iplabs.ink/helpus",
             }
         }
+
+
+class SetGuildInformation(BaseModel):
+    bracket_link: str = Field(description="URL to the Bracket")
+    tournament_name: str = Field(description="Tournament Name")

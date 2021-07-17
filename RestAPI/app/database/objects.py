@@ -56,6 +56,19 @@ class CommentatorProfile:
         }
 
     @property
+    def mongo_dict(self) -> dict:
+        """
+        returns a dict for MongoDB
+        :return: dict for MongoDB
+        """
+        return {
+            "discordUserID": f"{self.discord_user_id}",
+            "twitter": f"{self.twitter}",
+            "name": f"{self.name}",
+            "pronouns": f"{self.pronouns}"
+        }
+
+    @property
     def live_dict(self) -> dict:
         """Return live commentator dict"""
         return {
@@ -86,6 +99,7 @@ class GuildInfo:
         self.alert_channel_id = query_data.get("alertChannelID")
         self.bracket_link = query_data.get("bracketLink")
         self.tournament_name = query_data.get("tournamentName")
+        self.discord_link = query_data.get("discordLink")
         self.custom_command = query_data.get("customCommands", {})
         self.commands = []
         for name in self.custom_command.keys():
@@ -111,6 +125,23 @@ class GuildInfo:
         for x in self.commands:
             return_list.append(x.dict)
         return return_list
+
+    @property
+    def dict(self) -> dict:
+        comms = []
+        for x in self.current_comms:
+            comms.append(x.mongo_dict)
+        return {
+            "discordGuildId": self.guild_id,
+            "twitchChannelName": self.twitch_channel,
+            "discordVCID": self.vc_channel_id,
+            "alertChannelID": self.alert_channel_id,
+            "currentComms": comms,
+            "bracketLink": self.bracket_link,
+            "tournamentName": self.tournament_name,
+            "customCommands": self.custom_command,
+            "discordLink": self.discord_link
+        }
 
 
 class AccessKey:

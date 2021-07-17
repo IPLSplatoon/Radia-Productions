@@ -6,3 +6,5 @@ dnspython
 pydantic
 cryptography
 aiohttp
+aredis
+msgpack
