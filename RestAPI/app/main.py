@@ -3,7 +3,7 @@ from fastapi.openapi.utils import get_openapi
 import os
 import logging
 from app.database import DBConnector
-from app.routers import commentators, live, organisation
+from app.routers import commentators, live, organisation, commands, mocking
 # import uvicorn
 
 debug = os.getenv("DEBUG")
@@ -43,19 +43,28 @@ if sentry_env := os.getenv("SENTRY"):
 else:
     logging.info("static.env - 'SENTRY' key not found. Skipping Sentry.")
 
-# Load Database
+# Load Database credentials
 if not (mongo_uri := os.getenv("MONGODBURI")):
     logging.error("static.env - 'MONGODBURI' key not found. Cannot start bot.")
     raise EnvironmentError
 
+# Load Redis credentials
+if not (debug := os.getenv("DEBUG")):
+    redis_url = "redis://redis:6379"
+elif debug == "1":
+    if not (redis_url := os.getenv("REDISURL")):
+        redis_url = "redis://redis:6379"
+else:
+    redis_url = "redis://redis:6379"
+
 
 def create_app():
-    database = DBConnector(mongo_uri, "radiaTwitch")
+    database = DBConnector(mongo_uri, "radiaTwitch", redis_url)
 
     app = FastAPI(
         title="Radia Production API",
         description="Inkling Performance Labs Production API Service",
-        version="1.1.0",
+        version="1.2.0",
         docs_url=None,
         redoc_url="/docs"
     )
@@ -81,6 +90,18 @@ def create_app():
         tags=['organisation']
     )
 
+    app.include_router(
+        commands.router,
+        prefix="/commands",
+        tags=['commands']
+    )
+
+    app.include_router(
+        mocking.router,
+        prefix="/mock",
+        tags=['mocking']
+    )
+
     @app.middleware("http")
     async def db_session_middleware(request: Request, call_next):
         request.state.db = database
@@ -94,7 +115,7 @@ def create_app():
             title="Radia Production API",
             description="Inkling Performance Labs Production API Service. <br>"
                         "URL: https://github.com/IPLSplatoon/Radia-Productions | Documentation Licence: CC-BY 4.0",
-            version="1.1.0",
+            version="1.2.0",
             routes=app.routes,
             tags=[
                 {
@@ -108,7 +129,16 @@ def create_app():
                 {
                     "name": "organisation",
                     "description": "Retrieve information about a Discord Guild/Twitch Channel settings"
-                }
+                },
+                {
+                    "name": "commands",
+                    "description": "Retrieve custom commands for a Discord Guild/Twitch Channel"
+                },
+                {
+                    "name": "mocking",
+                    "description": "Used for mocking other endpoints in testing scenario. Does **not** support verify"
+                                   "the header `Authorization` apiKey!"
+                },
             ]
         )
         security = openapi_schema["components"]["securitySchemes"]

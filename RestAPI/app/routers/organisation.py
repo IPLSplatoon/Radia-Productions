@@ -1,30 +1,14 @@
 from fastapi import APIRouter, Request, HTTPException, Depends
 from app.dependencies import get_api_key
-from pydantic import BaseModel, Field
-from typing import Optional
+from app.models import GuildInformation, SetGuildInformation
 
 router = APIRouter()
 
 
-class GuildInformation(BaseModel):
-    guild_id: Optional[str] = Field(description="Entry's Discord Guild ID")
-    twitch_channel: Optional[str] = Field(description="Entry's Twitch channel name")
-    bracket_link: Optional[str] = Field(description="Entry's URL link to last set bracket")
-    tournament_name: Optional[str] = Field(description="Entry's last set tournament name")
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "guild_id": "805933686745726987",
-                "twitch_channel": "iplsplatoon",
-                "bracket_link": "https://iplabs.ink/bracket",
-                "tournament_name": "Unnamed Tournament: Ladder Edition"
-            }
-        }
-
-
 @router.get("/guild/{guild_id}", response_model=GuildInformation, responses={
     404: {"description": "No such organisation"},
+    401: {"description": "Invalid API Key"},
+    403: {"description": "Not Authenticated"}
 })
 async def guild_info(request: Request, guild_id, security_profile=Depends(get_api_key)):
     """
@@ -44,6 +28,8 @@ async def guild_info(request: Request, guild_id, security_profile=Depends(get_ap
 
 @router.get("/twitch/{twitch_name}", response_model=GuildInformation, responses={
     404: {"description": "No such organisation"},
+    401: {"description": "Invalid API Key"},
+    403: {"description": "Not Authenticated"}
 })
 async def twitch_info(request: Request, twitch_name, security_profile=Depends(get_api_key)):
     """
@@ -59,3 +45,33 @@ async def twitch_info(request: Request, twitch_name, security_profile=Depends(ge
         }
     else:
         raise HTTPException(status_code=404, detail="No such organisation")
+
+
+@router.post("/guild/{guild_id}", response_model=GuildInformation, responses={
+    404: {"description": "No such organisation"},
+    401: {"description": "Invalid API Key"},
+    403: {"description": "Not Authenticated"},
+    500: {"description": "Internal Server Error"}
+})
+async def set_guild_info(request: Request, guild_id: str, tournament_info: SetGuildInformation,
+                         security_profile=Depends(get_api_key)):
+    """Set a guild's tournament info"""
+    if not security_profile.check_guilds(guild_id):
+        raise HTTPException(status_code=403, detail="Not Authorised for guild")
+    else:
+        info = await request.state.db.get_org_info({"discordGuildID": f"{guild_id}"})
+        if info:
+            response = await request.state.db.set_guild_bracket_info({"discordGuildID": f"{guild_id}"},
+                                                                     tournament_info.bracket_link,
+                                                                     tournament_info.tournament_name)
+            if response:
+                return {
+                    "guild_id": response.guild_id,
+                    "twitch_channel": response.twitch_channel,
+                    "bracket_link": response.bracket_link,
+                    "tournament_name": response.tournament_name
+                }
+            else:
+                raise HTTPException(status_code=500, detail="Internal Server Error")
+        else:
+            raise HTTPException(status_code=404, detail="No such organisation")

@@ -4,6 +4,25 @@ Class design for objects
 from typing import Optional, List
 
 
+class Command:
+    def __init__(self, name: str, contents: str):
+        """
+        Constructor
+        :param name: Command name
+        :param contents: command contents
+        """
+        self.name = name
+        self.contents = contents
+
+    @property
+    def dict(self) -> dict:
+        """Returns dict of command"""
+        return {
+            "name": self.name,
+            "contents": self.contents
+        }
+
+
 class CommentatorProfile:
     discord_user_id: Optional[str]
     twitter: Optional[str]
@@ -13,6 +32,10 @@ class CommentatorProfile:
     no_alert: bool
 
     def __init__(self, query_data: dict):
+        """
+        Constructor
+        :param query_data: data dict
+        """
         self.discord_user_id = query_data.get("discordUserID")
         self.twitter = query_data.get("twitter")
         self.name = query_data.get("name")
@@ -22,7 +45,8 @@ class CommentatorProfile:
 
     @property
     def dict(self) -> dict:
-        return{
+        """Return commentator dict"""
+        return {
             "discord_user_id": self.discord_user_id,
             "twitter": self.twitter,
             "name": self.name,
@@ -32,7 +56,21 @@ class CommentatorProfile:
         }
 
     @property
+    def mongo_dict(self) -> dict:
+        """
+        returns a dict for MongoDB
+        :return: dict for MongoDB
+        """
+        return {
+            "discordUserID": f"{self.discord_user_id}",
+            "twitter": f"{self.twitter}",
+            "name": f"{self.name}",
+            "pronouns": f"{self.pronouns}"
+        }
+
+    @property
     def live_dict(self) -> dict:
+        """Return live commentator dict"""
         return {
             "discord_user_id": self.discord_user_id,
             "twitter": self.twitter,
@@ -52,7 +90,7 @@ class GuildInfo:
 
     def __init__(self, query_data: dict):
         """
-        Init
+        Constructor
         :param query_data:
         """
         self.guild_id = query_data.get("discordGuildID")
@@ -61,6 +99,11 @@ class GuildInfo:
         self.alert_channel_id = query_data.get("alertChannelID")
         self.bracket_link = query_data.get("bracketLink")
         self.tournament_name = query_data.get("tournamentName")
+        self.discord_link = query_data.get("discordLink")
+        self.custom_command = query_data.get("customCommands", {})
+        self.commands = []
+        for name in self.custom_command.keys():
+            self.commands.append(Command(name, self.custom_command[name]))
         self.current_comms = []
         comms = query_data.get("currentComms")
         if comms:
@@ -69,10 +112,36 @@ class GuildInfo:
 
     @property
     def live_comms_dict(self) -> List[dict]:
+        """Return list of live commentators"""
         return_dict = []
         for x in self.current_comms:
             return_dict.append(x.live_dict)
         return return_dict
+
+    @property
+    def custom_command_list(self) -> List[dict]:
+        """Return a list of custom commands for guild"""
+        return_list = []
+        for x in self.commands:
+            return_list.append(x.dict)
+        return return_list
+
+    @property
+    def dict(self) -> dict:
+        comms = []
+        for x in self.current_comms:
+            comms.append(x.mongo_dict)
+        return {
+            "discordGuildId": self.guild_id,
+            "twitchChannelName": self.twitch_channel,
+            "discordVCID": self.vc_channel_id,
+            "alertChannelID": self.alert_channel_id,
+            "currentComms": comms,
+            "bracketLink": self.bracket_link,
+            "tournamentName": self.tournament_name,
+            "customCommands": self.custom_command,
+            "discordLink": self.discord_link
+        }
 
 
 class AccessKey:
@@ -92,4 +161,3 @@ class AccessKey:
             return True
         else:
             return False
-
