@@ -1,4 +1,4 @@
-twitchio
+twitchio==1.2.3
 motor
 sentry-sdk
 aiohttp
