@@ -61,9 +61,9 @@ async def set_guild_info(request: Request, guild_id: str, tournament_info: SetGu
     else:
         info = await request.state.db.get_org_info({"discordGuildID": f"{guild_id}"})
         if info:
-            response = await request.state.db.set_commentator_profile({"discordGuildID": f"{guild_id}"},
-                                                                      tournament_info.bracket_link,
-                                                                      tournament_info.tournament_name)
+            response = await request.state.db.set_guild_bracket_info({"discordGuildID": f"{guild_id}"},
+                                                                     tournament_info.bracket_link,
+                                                                     tournament_info.tournament_name)
             if response:
                 return {
                     "guild_id": response.guild_id,
@@ -75,5 +75,3 @@ async def set_guild_info(request: Request, guild_id: str, tournament_info: SetGu
                 raise HTTPException(status_code=500, detail="Internal Server Error")
         else:
             raise HTTPException(status_code=404, detail="No such organisation")
-
-

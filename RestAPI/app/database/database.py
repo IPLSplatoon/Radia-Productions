@@ -75,8 +75,8 @@ class DBConnector:
         if query:
             return GuildInfo(query)
 
-    async def set_server_bracket_info(self, query: dict, bracket_link: str,
-                                      tournament_name: str) -> Optional[GuildInfo]:
+    async def set_guild_bracket_info(self, query: dict, bracket_link: str,
+                                     tournament_name: str) -> Optional[GuildInfo]:
         """
         Set Guild bracket link and Tournament name
         :param query: query for organisation
