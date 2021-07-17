@@ -43,6 +43,7 @@ DISCORDTOKEN=Discord.bot.token
 MONGODBURI=Mongo.DB.Connection.URI
 SENTRY = "System Environment"  # Optional
 DEBUG = 1  # Optional
+REDISURL = "REDIURI" # Used in testing only for sepecify where the redisDB is 
 ```
 
 ### `twitch.env` for Twitch Bot
@@ -54,6 +55,7 @@ TWITCHCHANNELS=Channel.to.connect.to.seperated.by.comma (e.g vlee111,iplsplatoon
 MONGODBURI=Mongo.DB.Connection.URI
 SENTRY = "System Environment"  # Optional
 DEBUG = 1  # Optional
+REDISURL = "REDIURI" # Used in testing only for sepecify where the redisDB is 
 ```
 
 ### `restapi.env` for REST API
@@ -61,6 +63,7 @@ DEBUG = 1  # Optional
 MONGODBURI=Mongo.DB.Connection.URI
 SENTRY = "System Environment"  # Optional
 DEBUG = 1  # Optional
+REDISURL = "REDIURI" # Used in testing only for sepecify where the redisDB is 
 ```
 
 ### `docker-compose.yml` edits
