@@ -6,11 +6,17 @@ from typing import Optional, List
 
 class Command:
     def __init__(self, name: str, contents: str):
+        """
+        Constructor
+        :param name: Command name
+        :param contents: command contents
+        """
         self.name = name
         self.contents = contents
 
     @property
     def dict(self) -> dict:
+        """Returns dict of command"""
         return {
             "name": self.name,
             "contents": self.contents
@@ -26,6 +32,10 @@ class CommentatorProfile:
     no_alert: bool
 
     def __init__(self, query_data: dict):
+        """
+        Constructor
+        :param query_data: data dict
+        """
         self.discord_user_id = query_data.get("discordUserID")
         self.twitter = query_data.get("twitter")
         self.name = query_data.get("name")
@@ -35,6 +45,7 @@ class CommentatorProfile:
 
     @property
     def dict(self) -> dict:
+        """Return commentator dict"""
         return {
             "discord_user_id": self.discord_user_id,
             "twitter": self.twitter,
@@ -46,6 +57,7 @@ class CommentatorProfile:
 
     @property
     def live_dict(self) -> dict:
+        """Return live commentator dict"""
         return {
             "discord_user_id": self.discord_user_id,
             "twitter": self.twitter,
@@ -65,7 +77,7 @@ class GuildInfo:
 
     def __init__(self, query_data: dict):
         """
-        Init
+        Constructor
         :param query_data:
         """
         self.guild_id = query_data.get("discordGuildID")
@@ -86,6 +98,7 @@ class GuildInfo:
 
     @property
     def live_comms_dict(self) -> List[dict]:
+        """Return list of live commentators"""
         return_dict = []
         for x in self.current_comms:
             return_dict.append(x.live_dict)
@@ -93,6 +106,7 @@ class GuildInfo:
 
     @property
     def custom_command_list(self) -> List[dict]:
+        """Return a list of custom commands for guild"""
         return_list = []
         for x in self.commands:
             return_list.append(x.dict)
