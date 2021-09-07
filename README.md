@@ -10,6 +10,7 @@ Radia Production is a stack of applications made by
 - Set tournament information and bracket link
 - Twitch bot for view to run command to see commentators' information
 - REST API for requesting information for use on overlays and other services
+- Custom Twitch Command support, for custom commands
 
 ## stack
 This mono-repository containing multiple components that make up the production
@@ -30,6 +31,9 @@ Each application in the stack requires its own .env file located in the **Root**
 directory, they are as follows.
 
 It's recommended that you have separate username and password URI for MongoDB
+
+It's recommended you use docker-compose to deploy your stack as it handles the
+other requirements such as Redis for DB caching for you.
 
 ### **Sentry Disclosure**
 
@@ -55,7 +59,7 @@ TWITCHCHANNELS=Channel.to.connect.to.seperated.by.comma (e.g vlee111,iplsplatoon
 MONGODBURI=Mongo.DB.Connection.URI
 SENTRY = "System Environment"  # Optional
 DEBUG = 1  # Optional
-REDISURL = "REDIURI" # Used in testing only for sepecify where the redisDB is 
+REDISURL = "REDIURI" # Used in testing only for sepecify where the redisDB is hosted  
 ```
 
 ### `restapi.env` for REST API
