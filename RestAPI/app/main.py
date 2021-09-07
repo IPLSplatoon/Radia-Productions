@@ -3,8 +3,8 @@ from fastapi.openapi.utils import get_openapi
 import os
 import logging
 from app.database import DBConnector
-from app.routers import commentators, live, organisation, commands, mocking
-# import uvicorn
+from app.routers import commentators, live, organisation, commands, mocking, seeding
+import uvicorn
 
 debug = os.getenv("DEBUG")
 
@@ -102,6 +102,12 @@ def create_app():
         tags=['mocking']
     )
 
+    app.include_router(
+        seeding.router,
+        prefix="/seeding",
+        tags=['seeding']
+    )
+
     @app.middleware("http")
     async def db_session_middleware(request: Request, call_next):
         request.state.db = database
@@ -138,6 +144,10 @@ def create_app():
                     "name": "mocking",
                     "description": "Used for mocking other endpoints in testing scenario. Does **not** support verify"
                                    "the header `Authorization` apiKey!"
+                },
+                {
+                    "name": "seeding",
+                    "description": "A set of seeding tools."
                 },
             ]
         )
