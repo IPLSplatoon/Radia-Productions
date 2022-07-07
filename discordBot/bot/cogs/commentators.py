@@ -117,7 +117,7 @@ class Commentators(commands.Cog):
             try:
                 if response:
                     embed = utils.Embed(title="Commentator No Alert", description=f"Set your no alert state")
-                    embed.add_field(name="No Show", value=f"True")
+                    embed.add_field(name="No Alert", value=f"True")
                     await ctx.send(embed=embed)
                     return
             except Exception as err:
@@ -127,7 +127,7 @@ class Commentators(commands.Cog):
             try:
                 if response:
                     embed = utils.Embed(title="Commentator No Alert", description=f"Set your no alert state")
-                    embed.add_field(name="No Show", value=f"False")
+                    embed.add_field(name="No Alert", value=f"False")
                     await ctx.send(embed=embed)
                     return
             except Exception as err:
