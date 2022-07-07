@@ -1,12 +1,12 @@
 """
 Handles all commands for commentators
 """
-import discord
-from discord.ext import commands
 import re
 
-from bot.database import DBConnector
+import discord
 from bot import utils
+from bot.database import DBConnector
+from discord.ext import commands
 
 discord_mention = re.compile(r"<@!(\d+)>")
 
